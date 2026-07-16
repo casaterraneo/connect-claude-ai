@@ -24,18 +24,25 @@ Questa guida documenta il flusso di setup così come si presenta nella pratica �
 1. **Crea una OAuth App su GitHub**
    Vai su `GitHub → Settings → Developer settings → OAuth Apps → New OAuth App`.
 
+   > **OAuth App vs GitHub App:** sono due meccanismi diversi. Una *GitHub App* si installa su repository specifici, con permessi granulari selezionabili. Una *OAuth App* (quella usata qui) autorizza invece a livello di intero account utente — non permette di scegliere singoli repository. Questa distinzione è importante per la sezione sui permessi più avanti.
+
 2. **Compila i campi richiesti**
-   - *Homepage URL*: l'URL della tua organizzazione o un placeholder valido
+   - *Homepage URL*: campo puramente informativo, mostrato agli utenti nella schermata di consenso OAuth — non incide sul funzionamento tecnico. Va bene l'URL della tua organizzazione, del repository, o un placeholder come `https://github.com`
    - *Authorization callback URL*: `https://claude.ai/api/mcp/auth_callback`
 
 3. **Genera Client ID e Client Secret**
    Dopo la creazione dell'app, GitHub mostra il *Client ID*. Genera anche un *Client Secret* dalla stessa pagina.
 
+   > **Se perdi il Client Secret:** GitHub non permette di recuperarlo in un secondo momento — va generato uno nuovo dalla stessa pagina dell'OAuth App e aggiornato nelle "Advanced settings" del connector (passo 6).
+
 4. **Vai su claude.ai → Impostazioni → Connettori**
    Nel menu delle impostazioni dell'account, seleziona la sezione "Connettori".
 
 5. **Aggiungi un connector personalizzato**
-   Clicca su "Aggiungi connector personalizzato" e inserisci l'URL del server MCP ufficiale di GitHub.
+   Clicca su "Aggiungi connector personalizzato" e inserisci l'URL del server MCP ufficiale di GitHub:
+   ```
+   https://api.githubcopilot.com/mcp
+   ```
 
 6. **Apri "Advanced settings"**
    Inserisci il *Client ID* e il *Client Secret* generati al passo 3.
@@ -60,8 +67,6 @@ flowchart TD
 
 ## Permessi OAuth richiesti
 
-Il server MCP ufficiale di GitHub usa un'**app OAuth classica**, non una GitHub App. Questo significa che i permessi sono concessi a livello di **intero account**, non per singolo repository — a differenza delle GitHub App, che permettono di selezionare repo specifici.
-
 Durante l'autorizzazione, GitHub mostra questa schermata di permessi, **fissa e non configurabile**:
 
 - Full control of codespaces
@@ -75,9 +80,7 @@ Durante l'autorizzazione, GitHub mostra questa schermata di permessi, **fissa e 
 - Update GitHub Actions workflows
 - Upload packages to GitHub Package Registry
 
-> ⚠️ **Punto aperto — da risolvere:** questi permessi non sono modificabili in fase di autorizzazione e sono significativamente più ampi di quanto necessario per il solo utilizzo previsto (lettura/scrittura file, issue, pull request). Non esiste, ad oggi, un modo per restringere lo scope direttamente in questo flusso OAuth. Questo è un problema di sicurezza non ancora risolto: va identificata una soluzione (es. account GitHub dedicato con accesso limitato ai soli repository da esporre, fine-grained personal access token con connector custom alternativo, o attesa di un eventuale supporto a permessi granulari da parte del server ufficiale).
-
-**Da tenere presente nel frattempo:** anche se lo scope OAuth è ampio, Claude può effettivamente invocare solo i tool esposti dal server MCP (repository, file, issue, pull request) — il raggio d'azione pratico è quindi più stretto dei permessi concessi. Questo non elimina il problema, ma ne limita l'impatto pratico in attesa di una soluzione.
+> ⚠️ **Punto aperto — da risolvere:** questi permessi non sono modificabili in fase di autorizzazione e sono significativamente più ampi di quanto necessario per il solo utilizzo previsto (lettura/scrittura file, issue, pull request). Non esiste, ad oggi, un modo per restringere lo scope direttamente in questo flusso OAuth. Questo è un problema di sicurezza non ancora risolto: va identificata una soluzione (es. account GitHub dedicato con accesso limitato ai soli repository da esporre, fine-grained personal access token con connector custom alternativo, o attesa di un eventuale supporto a permessi granulari da parte del server ufficiale). Va trattato come un rischio attivo, non solo teorico, finché non viene risolto.
 
 ## Verifica funzionamento
 
