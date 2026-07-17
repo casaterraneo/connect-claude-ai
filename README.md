@@ -1,3 +1,5 @@
+🌐 [English](README.md) | [Italiano](test.md) | [中文](README.zh.md) | [Español](README.es.md) | [हिन्दी](README.hi.md)
+
 # How to configure the official GitHub MCP server on claude.ai (web)
 
 ## Context
